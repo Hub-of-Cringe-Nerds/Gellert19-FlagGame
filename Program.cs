@@ -12,6 +12,7 @@ namespace TextAdventuresCS
         const int MinimumIDForItem = 2001;
         const int IDDifferenceForObjectInTwoLocations = 10000;
         static Random Rnd = new Random();
+        static int MovesMade, HighScore;
 
         class Place
         {
@@ -29,6 +30,14 @@ namespace TextAdventuresCS
         {
             public int ID, Location;
             public string Description, Status, Name, Commands, Results;
+        }
+
+        private static void HiScore(int MovesMade, ref int HighScore)
+        {
+            if (MovesMade > HighScore)
+            {
+                HighScore = MovesMade;
+            }
         }
 
         private static string GetInstruction()
@@ -141,7 +150,7 @@ namespace TextAdventuresCS
         {
             bool moved = true;
 
-            switch(room)
+            switch (room)
             {
                 case "blue room":
                     you.CurrentLocation = 1;
@@ -171,7 +180,7 @@ namespace TextAdventuresCS
                     moved = false;
                     break;
             }
-            if(!moved)
+            if (!moved)
             {
                 Console.WriteLine();
                 Console.WriteLine("You cannot teleport to {0} please try again.", room);
@@ -595,7 +604,7 @@ namespace TextAdventuresCS
             bool canGet = false;
             indexOfItem = GetIndexOfItem(itemToGet, -1, items);
 
-            if(CountInventory(items) < MaxInventory)
+            if (CountInventory(items) < MaxInventory)
             {
                 if (indexOfItem == -1)
                 {
@@ -633,6 +642,12 @@ namespace TextAdventuresCS
                     else if (subCommand == "win")
                     {
                         Say("You have won the game");
+                        if (MovesMade < HighScore)
+                        {
+                            Console.WriteLine("Congratulations! You have won the game using less comands than lowest record.");
+                            Console.WriteLine("Number of commands given: {0}", MovesMade);
+                            HiScore(MovesMade, ref HighScore);
+                        }
                         stopGame = true;
                         return;
                     }
@@ -737,7 +752,7 @@ namespace TextAdventuresCS
             Console.WriteLine(".");
             string ChosenItem = Console.ReadLine()!;
 
-            if(CountInventory(items) < MaxInventory)
+            if (CountInventory(items) < MaxInventory)
             {
                 if (ListOfNamesOfItemsInInventory.Contains(ChosenItem))
                 {
@@ -749,13 +764,13 @@ namespace TextAdventuresCS
                 {
                     Console.WriteLine("They don't have that item, so you don't take anything this time.");
                 }
-                
+
             }
             else
             {
                 Console.WriteLine("You cannot carry any more items, so you don't take anything this time.");
             }
-            
+
         }
 
         private static void TakeRandomItemFromPlayer(List<Item> items, int otherCharacterID)
@@ -853,7 +868,7 @@ namespace TextAdventuresCS
 
             foreach (var thing in items)
             {
-                if(thing.Location == Inventory)
+                if (thing.Location == Inventory)
                 {
                     count++;
                 }
@@ -938,7 +953,7 @@ namespace TextAdventuresCS
                 if (moved)
                 {
                     Console.WriteLine();
-                    
+
                     Console.WriteLine(places[characters[0].CurrentLocation - 1].Description);
                     DisplayGettableItemsInLocation(items, characters[0].CurrentLocation);
                     moved = false;
@@ -951,18 +966,23 @@ namespace TextAdventuresCS
                 {
                     case "get":
                         GetItem(items, instruction, characters[0].CurrentLocation, ref stopGame);
+                        MovesMade++;
                         break;
                     case "leave":
                         LeaveItem(items, instruction, characters[0].CurrentLocation);
+                        MovesMade++;
                         break;
                     case "use":
                         UseItem(items, instruction, characters[0].CurrentLocation, ref stopGame, places);
+                        MovesMade++;
                         break;
                     case "go":
                         moved = Go(characters[0], instruction, places[characters[0].CurrentLocation - 1]);
+                        MovesMade++;
                         break;
                     case "read":
                         ReadItem(items, instruction, characters[0].CurrentLocation);
+                        MovesMade++;
                         break;
                     case "examine":
                         Examine(items, characters, instruction, characters[0].CurrentLocation);
@@ -970,29 +990,36 @@ namespace TextAdventuresCS
                     case "open":
                         resultOfOpenClose = OpenClose(true, items, places, instruction, characters[0].CurrentLocation);
                         DisplayOpenCloseMessage(resultOfOpenClose, true);
+                        MovesMade++;
                         break;
                     case "close":
                         resultOfOpenClose = OpenClose(false, items, places, instruction, characters[0].CurrentLocation);
                         DisplayOpenCloseMessage(resultOfOpenClose, false);
+                        MovesMade++;
                         break;
                     case "move":
                         MoveItem(items, instruction, characters[0].CurrentLocation);
-                        break;
-                    case "say":
-                        Say(instruction);
-                        break;
-                    case "playdice":
-                        PlayDiceGame(characters, items, instruction);
+                        MovesMade++;
                         break;
                     case "tp":
                         moved = Teleport(characters[0], instruction, places[characters[0].CurrentLocation - 1]);
+                        MovesMade++;
+                        break;
+                    case "say":
+                        Say(instruction);
+                        MovesMade++;
+                        break;
+                    case "playdice":
+                        PlayDiceGame(characters, items, instruction);
+                        MovesMade++;
                         break;
                     case "quit":
                         Say("You decide to give up, try again another time.");
+                        Console.WriteLine("Number of commands given: {0}", MovesMade);
                         stopGame = true;
                         break;
                     default:
-                        Console.WriteLine("Sorry, you don't know how to " + Command + ".");
+                        Console.WriteLine("Sorry, you don't know how to {0}.", Command);
                         break;
                 }
             }
@@ -1059,7 +1086,7 @@ namespace TextAdventuresCS
             List<Item> items = new List<Item>();
             List<Character> characters = new List<Character>();
 
-            //Console.Write("Enter filename> ");
+            //Console.Write("Enter filename or enter 'q' to quit> ");
             filename = @"C:\Users\golde\OneDrive\Desktop\Coding\VS Projects\FlagGame\Games\flag1.gme";
 
             if (LoadGame(filename, characters, items, places))
@@ -1074,6 +1101,3 @@ namespace TextAdventuresCS
         }
     }
 }
-
-
-
