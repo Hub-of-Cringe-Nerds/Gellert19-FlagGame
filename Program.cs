@@ -644,6 +644,17 @@ namespace TextAdventuresCS
                     else if (subCommand == "win")
                     {
                         Say("You have won the game");
+                        if (MovesMade < HighScore)
+                        {
+                            Console.WriteLine("Congratulations! You have won the game using less comands than lowest record.");
+                            Console.WriteLine("Number of commands given: {0}", MovesMade);
+                            HiScore(MovesMade, ref HighScore);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Number of commands given: {0}", MovesMade);
+                            HiScore(MovesMade, ref HighScore);
+                        }
                         stopGame = true;
                         return;
                     }
@@ -1084,8 +1095,17 @@ namespace TextAdventuresCS
             List<Character> characters = new List<Character>();
             bool validfile = false;
 
-            //Console.Write("Enter filename> ");
-            filename = @"C:\Users\golde\OneDrive\Desktop\Coding\VS Projects\FlagGame\Games\flag1.gme";
+            //while(!validfile)
+            //{
+            //    Console.Write("Enter filename or enter 'q' to quit> ");
+            //    filename = Console.ReadLine()!;
+            //    if(filename != ".gme")
+            //    {
+            //        filename += ".gme";
+            //    }
+            //}
+
+            filename = @"C:\Users\Gellert\Downloads\Game\flag1.gme";
 
             if (LoadGame(filename, characters, items, places))
             {
@@ -1099,3 +1119,4 @@ namespace TextAdventuresCS
         }
     }
 }
+
