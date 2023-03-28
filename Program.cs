@@ -1093,7 +1093,7 @@ namespace TextAdventuresCS
             List<Place> places = new List<Place>();
             List<Item> items = new List<Item>();
             List<Character> characters = new List<Character>();
-            bool validfile = false;
+            //bool validfile = false;
 
             //while(!validfile)
             //{
